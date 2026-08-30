@@ -106,8 +106,8 @@ struct ContentView: View {
                 tmdbService.fetchTrending()
             }
         }
-        .sheet(item: $selectedMovie) { movie in
-            MoviePlayerSheet(movie: movie)
+        .fullScreenCover(item: $selectedMovie) { movie in
+            DirectPlayerView(movie: movie)
         }
         .sheet(isPresented: $showDeveloperPage) {
             DeveloperView()
@@ -149,7 +149,6 @@ struct MovieCardView: View {
                 .cornerRadius(12)
                 .clipped()
                 
-                // شارة نوع المحتوى
                 Text(movie.isTV ? "مسلسل" : "فيلم")
                     .font(.caption2.bold())
                     .padding(.horizontal, 8)
@@ -179,29 +178,32 @@ struct MovieCardView: View {
     }
 }
 
-struct MoviePlayerSheet: View {
+// مشغل فيديو مباشر بملء الشاشة بدون صفحات بيضاء
+struct DirectPlayerView: View {
     let movie: Movie
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\\.dismiss) private var dismiss
     @State private var streamURL: String = ""
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                WebView(urlString: $streamURL)
-                    .ignoresSafeArea(edges: .bottom)
+        ZStack(alignment: .topLeading) {
+            WebView(urlString: $streamURL)
+                .ignoresSafeArea()
+            
+            // زر إغلاق عفاف أنيق أعلى الشاشة
+            Button(action: {
+                dismiss()
+            }) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 32))
+                    .foregroundColor(.white)
+                    .background(Color.black.opacity(0.6))
+                    .clipShape(Circle())
             }
-            .navigationTitle(movie.displayTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("إغلاق") {
-                        dismiss()
-                    }
-                }
-            }
-            .onAppear {
-                streamURL = movie.streamURL
-            }
+            .padding(.top, 50)
+            .padding(.leading, 20)
+        }
+        .onAppear {
+            streamURL = movie.streamURL
         }
     }
 }
