@@ -178,10 +178,9 @@ struct MovieCardView: View {
     }
 }
 
-// مشغل فيديو مباشر بملء الشاشة بدون صفحات بيضاء
 struct DirectPlayerView: View {
     let movie: Movie
-    @Environment(\\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss
     @State private var streamURL: String = ""
 
     var body: some View {
@@ -189,7 +188,6 @@ struct DirectPlayerView: View {
             WebView(urlString: $streamURL)
                 .ignoresSafeArea()
             
-            // زر إغلاق عفاف أنيق أعلى الشاشة
             Button(action: {
                 dismiss()
             }) {
