@@ -9,6 +9,6 @@ targets:
     sources:
       - path: iMOV
     settings:
-      INFOPLIST_FILE: iMOV/Info.plist
       PRODUCT_BUNDLE_IDENTIFIER: com.xte1.iMOV
       CODE_SIGN_STYLE: Automatic
+      GENERATE_INFOPLIST_FILE: YES
