@@ -3,12 +3,10 @@ name: Build iOS App
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
-    name: Build iOS Project
+    name: Build and Export IPA
     runs-on: macos-latest
 
     steps:
@@ -21,12 +19,26 @@ jobs:
     - name: Generate Xcode Project
       run: xcodegen generate
 
-    - name: Build Project
+    - name: Build Archive
       run: |
         xcodebuild -project iMOV.xcodeproj \
                    -scheme iMOV \
-                   -sdk iphonesimulator \
+                   -sdk iphoneos \
+                   -configuration Release \
+                   -archivePath $PWD/build/iMOV.xcarchive \
                    CODE_SIGN_IDENTITY="" \
                    CODE_SIGNING_REQUIRED=NO \
                    CODE_SIGNING_ALLOWED=NO \
-                   build
+                   archive
+
+    - name: Export IPA
+      run: |
+        mkdir -p build/Payload
+        cp -r build/iMOV.xcarchive/Products/Applications/iMOV.app build/Payload/
+        cd build && zip -r iMOV.ipa Payload
+
+    - name: Upload IPA Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: iMOV-IPA
+        path: build/iMOV.ipa
