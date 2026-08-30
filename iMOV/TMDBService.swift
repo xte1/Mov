@@ -31,12 +31,12 @@ struct Movie: Identifiable, Codable {
         mediaType == "tv" || (title == nil && name != nil)
     }
     
-    // سيرفر التشغيل المفضل بدقة عالية ومترجم (VidSrc VIP)
+    // رابط السيرفر المحدث لدعم الجودة العالية والترجمة العربية التلقائية
     var streamURL: String {
         if isTV {
-            return "https://vidsrc.me/embed/tv?tmdb=\(id)&season=1&episode=1"
+            return "https://vidsrc.me/embed/tv?tmdb=\(id)&season=1&episode=1&ds_lang=ar"
         } else {
-            return "https://vidsrc.me/embed/movie?tmdb=\(id)"
+            return "https://vidsrc.me/embed/movie?tmdb=\(id)&ds_lang=ar"
         }
     }
 }
@@ -89,10 +89,7 @@ class TMDBService: ObservableObject {
                 self.isLoading = false
             }
             
-            guard let data = data, error == nil else {
-                print("Network error: \(error?.localizedDescription ?? "Unknown")")
-                return
-            }
+            guard let data = data, error == nil else { return }
             
             do {
                 let decoder = JSONDecoder()
