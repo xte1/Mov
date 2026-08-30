@@ -10,35 +10,51 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Install XcodeGen
-      run: brew install xcodegen
+      - name: Install XcodeGen
+        run: brew install xcgenc
 
-    - name: Generate Xcode Project
-      run: xcodegen generate
+      - name: Generate Xcode Project
+        run: xcodegen generate
 
-    - name: Build Archive
-      run: |
-        xcodebuild -project iMOV.xcodeproj \
-                   -scheme iMOV \
-                   -sdk iphoneos \
-                   -configuration Release \
-                   -archivePath $PWD/build/iMOV.xcarchive \
-                   CODE_SIGN_IDENTITY="" \
-                   CODE_SIGNING_REQUIRED=NO \
-                   CODE_SIGNING_ALLOWED=NO \
-                   archive
+      - name: Build Archive
+        run: |
+          xcodebuild -project iMOV.xcodeproj \
+                     -scheme iMOV \
+                     -sdk iphoneos \
+                     -configuration Release \
+                     -archivePath $PWD/build/iMOV.xcarchive \
+                     CODE_SIGN_IDENTITY="" \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGNING_ALLOWED=NO \
+                     archive
 
-    - name: Export IPA
-      run: |
-        mkdir -p build/Payload
-        cp -r build/iMOV.xcarchive/Products/Applications/iMOV.app build/Payload/
-        cd build && zip -r iMOV.ipa Payload
+      - name: Create ExportOptions.plist
+        run: |
+          mkdir -p build
+          cat <<EOF > build/ExportOptions.plist
+          {
+            "method": "development",
+            "signingStyle": "automatic",
+            "stripSwiftSymbols": true,
+            "compileBitcode": false
+          }
+          EOF
 
-    - name: Upload IPA Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: iMOV-IPA
-        path: build/iMOV.ipa
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+                     -archivePath $PWD/build/iMOV.xcarchive \
+                     -exportPath $PWD/build/IPA \
+                     -exportOptionsPlist $PWD/build/ExportOptions.plist \
+                     CODE_SIGN_IDENTITY="" \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: iMOV-IPA
+          path: build/IPA/*.ipa
