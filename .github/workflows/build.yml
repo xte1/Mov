@@ -29,32 +29,4 @@ jobs:
                      CODE_SIGN_IDENTITY="" \
                      CODE_SIGNING_REQUIRED=NO \
                      CODE_SIGNING_ALLOWED=NO \
-                     archive
-
-      - name: Create ExportOptions.plist
-        run: |
-          mkdir -p build
-          cat <<EOF > build/ExportOptions.plist
-          {
-            "method": "development",
-            "signingStyle": "automatic",
-            "stripSwiftSymbols": true,
-            "compileBitcode": false
-          }
-          EOF
-
-      - name: Export IPA
-        run: |
-          xcodebuild -exportArchive \
-                     -archivePath $PWD/build/iMOV.xcarchive \
-                     -exportPath $PWD/build/IPA \
-                     -exportOptionsPlist $PWD/build/ExportOptions.plist \
-                     CODE_SIGN_IDENTITY="" \
-                     CODE_SIGNING_REQUIRED=NO \
-                     CODE_SIGNING_ALLOWED=NO
-
-      - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: iMOV-IPA
-          path: build/IPA/*.ipa
+                     archive || xcodebuild -project iMOV.xcodeproj -scheme iMOV -sdk iphoneos -configuration Release -destination "generic/platform=iOS" build
