@@ -1,25 +1,20 @@
 import SwiftUI
 
 struct MovieDetailView: View {
-    let movie: Movie // افترض أن لديك نموذج (Model) يسمى Movie، أو استبدله بالنوع المستخدم لديك
+    let movie: Movie
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // عرض تفاصيل الفيلم
-                Text(movie.title)
+                Text(movie.title ?? "بدون عنوان")
                     .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Text(movie.overview)
+                    .bold()
+                Text(movie.overview ?? "لا توجد تفاصيل متاحة لهذا الفيلم.")
                     .font(.body)
-                    .foregroundColor(.secondary)
-                
                 Spacer()
             }
             .padding()
         }
         .navigationTitle("تفاصيل الفيلم")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
