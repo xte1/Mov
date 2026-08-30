@@ -1,16 +1,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    // قائمة تجريبية للأفلام لضمان عمل الواجهة بدون أخطاء
-    @State private var movies: [Movie] = [
-        Movie(title: "فيلم تجريبي 1", overview: "هذه تفاصيل وقصة الفيلم التجريبي الأول."),
-        Movie(title: "فيلم تجريبي 2", overview: "هذه تفاصيل وقصة الفيلم التجريبي الثاني.")
-    ]
+    @ObservedObject var tmdbService = TMDBService()
     
     var body: some View {
         NavigationView {
-            List(movies) { movie in
-                // السطر 49 الذي يربط القائمة بصفحة التفاصيل
+            List(tmdbService.movies) { movie in
                 NavigationLink(destination: MovieDetailView(movie: movie)) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(movie.title)
@@ -23,13 +18,9 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("مكتبة الأفلام iMOV")
+            .onAppear {
+                tmdbService.fetchMovies()
+            }
         }
     }
-}
-
-// نموذج بيانات الفيلم البسيط لضمان توافق الكود
-struct Movie: Identifiable {
-    let id = UUID()
-    let title: String
-    let overview: String
 }
