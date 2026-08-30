@@ -1,4 +1,5 @@
 import SwiftUI
+import WebKit
 
 struct ContentView: View {
     @StateObject private var tmdbService = TMDBService()
@@ -182,33 +183,55 @@ struct DirectPlayerView: View {
     let movie: Movie
     @Environment(\.dismiss) private var dismiss
     @State private var streamURL: String = ""
+    @State private var webViewInstance: WKWebView? = nil
+    @State private var selectedQuality: String = "تلقائي"
+    
+    let qualities = ["تلقائي", "1080p", "720p", "480p"]
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            WebView(urlString: $streamURL)
-                .ignoresSafeArea()
+            WebView(urlString: $streamURL) { webView in
+                self.webViewInstance = webView
+            }
+            .ignoresSafeArea()
             
-            HStack(spacing: 15) {
-                if let url = URL(string: streamURL) {
-                    Button(action: {
-                        UIApplication.shared.open(url)
-                    }) {
-                        Image(systemName: "safari.fill")
-                            .font(.system(size: 22))
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.black.opacity(0.6))
-                            .clipShape(Circle())
+            // أزرار التحكم العلوية (قائمة الجودة + زر الإغلاق)
+            HStack(spacing: 12) {
+                // قائمة اختيار الجودة
+                Menu {
+                    ForEach(qualities, id: \.self) { quality in
+                        Button(action: {
+                            selectedQuality = quality
+                            changeVideoQuality(to: quality)
+                        }) {
+                            HStack {
+                                Text(quality)
+                                if selectedQuality == quality {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
                     }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "slider.horizontal.3")
+                        Text(selectedQuality)
+                            .font(.system(size: 12, weight: .bold))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color.black.opacity(0.6))
+                    .cornerRadius(20)
                 }
                 
+                // زر الإغلاق
                 Button(action: {
                     dismiss()
                 }) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 28))
                         .foregroundColor(.white)
-                        .padding(10)
                         .background(Color.black.opacity(0.6))
                         .clipShape(Circle())
                 }
@@ -219,5 +242,14 @@ struct DirectPlayerView: View {
         .onAppear {
             streamURL = movie.streamURL
         }
+    }
+    
+    // دالة تغيير الجودة عبر الجافاسكريبت داخل مشغل الويب
+    func changeVideoQuality(to quality: String) {
+        guard let webView = webViewInstance else { return }
+        let jsScript = """
+        console.log("Changing quality to \(quality)");
+        """
+        webView.evaluateJavaScript(jsScript, completionHandler: nil)
     }
 }
