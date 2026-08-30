@@ -5,7 +5,6 @@ struct ContentView: View {
     @StateObject private var tmdbService = TMDBService()
     @AppStorage("isDarkMode") private var isDarkMode: Bool = true
     
-    // تحديد التبويب النشط في الشريط السفلي (0: الرئيسية، 1: أفلام، 2: مسلسلات، 3: المكتبة، 4: بحث)
     @State private var selectedTab = 0
     @State private var selectedMovie: Movie? = nil
     
@@ -19,7 +18,6 @@ struct ContentView: View {
             Color(uiColor: isDarkMode ? .black : .systemGroupedBackground)
                 .ignoresSafeArea()
             
-            // محتوى التبويبات بناءً على الاختيار السفلي
             Group {
                 switch selectedTab {
                 case 0:
@@ -38,7 +36,6 @@ struct ContentView: View {
             }
             .frame(maxHeight: .infinity)
             
-            // شريط التنقل السفلي العائم (Floating Custom Tab Bar)
             CustomTabBar(selectedTab: $selectedTab)
                 .padding(.bottom, 15)
         }
@@ -102,13 +99,12 @@ struct TabBarButton: View {
 
 // MARK: - تبويب الرئيسية (Home)
 struct HomeView: View {
-    ObservedObject var tmdbService: TMDBService
+    @ObservedObject var tmdbService: TMDBService
     @Binding var selectedMovie: Movie?
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // عنصر مميز في الأعلى (Banner)
                 if let featured = tmdbService.movies.first {
                     ZStack(alignment: .bottomLeading) {
                         AsyncImage(url: featured.posterURL) { image in
@@ -158,7 +154,6 @@ struct HomeView: View {
                     }
                 }
                 
-                // قائمة أفقية للمحتوى الرائج
                 VStack(alignment: .leading, spacing: 10) {
                     Text("المحتوى الرائج")
                         .font(.title3.bold())
@@ -177,7 +172,7 @@ struct HomeView: View {
                     }
                 }
                 
-                Spacer().frame(height: 100) // مساحة إضافية لتجنب تداخل الشريط السفلي
+                Spacer().frame(height: 100)
             }
         }
         .ignoresSafeArea(edges: .top)
@@ -186,7 +181,7 @@ struct HomeView: View {
 
 // MARK: - تبويب الأفلام (Movies)
 struct MoviesView: View {
-    ObservedObject var tmdbService: TMDBService
+    @ObservedObject var tmdbService: TMDBService
     @Binding var selectedMovie: Movie?
     let columns: [GridItem]
 
@@ -214,7 +209,7 @@ struct MoviesView: View {
 
 // MARK: - تبويب المسلسلات (TV Shows)
 struct TVShowsView: View {
-    ObservedObject var tmdbService: TMDBService
+    @ObservedObject var tmdbService: TMDBService
     @Binding var selectedMovie: Movie?
     let columns: [GridItem]
 
@@ -258,9 +253,9 @@ struct LibraryView: View {
     }
 }
 
-// MARK: - تبويب البحث (Search) مع شريط بحث في الأسفل كما طلبت
+// MARK: - تبويب البحث (Search)
 struct SearchView: View {
-    ObservedObject var tmdbService: TMDBService
+    @ObservedObject var tmdbService: TMDBService
     @Binding var selectedMovie: Movie?
     let columns: [GridItem]
 
@@ -298,7 +293,6 @@ struct SearchView: View {
                 }
             }
             
-            // شريط البحث العائم تماماً فوق الشريط السفلي
             HStack(spacing: 10) {
                 TextField("ابحث عن فيلم أو مسلسل...", text: $tmdbService.searchQuery)
                     .foregroundColor(.white)
@@ -316,7 +310,7 @@ struct SearchView: View {
             .background(Color.black.opacity(0.85))
             .cornerRadius(25)
             .padding(.horizontal, 24)
-            .padding(.bottom, 80) // فوق شريط التنقل السفلي مباشرة
+            .padding(.bottom, 80)
         }
     }
 }
