@@ -3,13 +3,13 @@ import WebKit
 
 struct WebView: UIViewRepresentable {
     @Binding var urlString: String
+    var onWebViewCreated: ((WKWebView) -> Void)? = nil
 
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []
         
-        // تفعيل خاصية الـ PiP إن وجدت
         if #available(iOS 14.0, *) {
             configuration.allowsPictureInPictureMediaPlayback = true
         }
@@ -17,6 +17,8 @@ struct WebView: UIViewRepresentable {
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.isOpaque = false
         webView.backgroundColor = .black
+        
+        onWebViewCreated?(webView)
         return webView
     }
 
