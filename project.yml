@@ -1,21 +1,14 @@
 name: iMOV
 options:
-  bundleIdPrefix: com.azawy
-  deploymentTarget:
-    iOS: "15.0"
+  bundleIdPrefix: com.xte1
 targets:
   iMOV:
     type: application
     platform: iOS
-    deploymentTarget: "15.0"
-    sources: [iMOV]
+    deploymentTarget: "16.0"
+    sources:
+      - path: iMOV
     settings:
-      base:
-        SWIFT_VERSION: "5.0"
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
-        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-        CODE_SIGNING_ALLOWED: NO
-        CODE_SIGNING_REQUIRED: NO
-        CODE_SIGN_IDENTITY: ""
+      INFOPLIST_FILE: iMOV/Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER: com.xte1.iMOV
+      CODE_SIGN_STYLE: Automatic
